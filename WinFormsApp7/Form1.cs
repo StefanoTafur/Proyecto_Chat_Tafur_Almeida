@@ -66,8 +66,18 @@ namespace ServerApp
                 while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) != 0)
                 {
                     string message = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                    UpdateStatus(clientName + ": " + message);
-                    BroadcastMessage(client, clientName + ": " + message);
+
+                    // Check if the message is a buzz command
+                    if (message == "BUZZ")
+                    {
+                        UpdateStatus(clientName + " envió un zumbido.");
+                        BroadcastMessage(client, "BUZZ");
+                    }
+                    else
+                    {
+                        UpdateStatus(clientName + ": " + message);
+                        BroadcastMessage(client, clientName + ": " + message);
+                    }
                 }
             }
             catch (Exception e)

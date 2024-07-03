@@ -1,4 +1,5 @@
 using System;
+using System.Media;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -73,6 +74,18 @@ namespace ClientApp
             }
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            SendBuzz();
+        }
+
+        private void SendBuzz()
+        {
+            string buzzMessage = "BUZZ";
+            byte[] data = Encoding.ASCII.GetBytes(buzzMessage);
+            stream.Write(data, 0, data.Length);
+        }
+
         private void ReceiveMessages()
         {
             byte[] buffer = new byte[1024];
@@ -83,13 +96,37 @@ namespace ClientApp
                 while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) != 0)
                 {
                     string message = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                    UpdateStatus(message);
+                    if (message == "BUZZ")
+                    {
+                        ShowBuzz();
+                    }
+                    else
+                    {
+                        UpdateStatus(message);
+                    }
                 }
             }
             catch (Exception e)
             {
                 UpdateStatus("Error: " + e.Message);
             }
+        }
+
+        private void ShowBuzz()
+        {
+            SystemSounds.Beep.Play();
+            // Additional code to vibrate the window
+            var originalLocation = this.Location;
+            var rnd = new Random();
+            const int shakeAmplitude = 20;
+            for (int i = 0; i < 10; i++)
+            {
+                this.Location = new System.Drawing.Point(
+                    originalLocation.X + rnd.Next(-shakeAmplitude, shakeAmplitude),
+                    originalLocation.Y + rnd.Next(-shakeAmplitude, shakeAmplitude));
+                Thread.Sleep(20);
+            }
+            this.Location = originalLocation;
         }
 
         private void UpdateStatus(string message)
