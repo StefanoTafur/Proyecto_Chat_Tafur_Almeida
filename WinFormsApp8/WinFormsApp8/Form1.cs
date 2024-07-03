@@ -29,7 +29,7 @@ namespace ClientApp
 
             try
             {
-                client = new TcpClient("172.20.37.96", 13002);
+                client = new TcpClient("172.20.11.27", 13002);
                 stream = client.GetStream();
                 UpdateStatus("Conectado al servidor...");
 
