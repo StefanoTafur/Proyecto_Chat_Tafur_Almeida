@@ -7,7 +7,6 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Globalization; // Importar el espacio de nombres
 
-//CAMBIOS C
 
 namespace ClientApp
 {
@@ -33,7 +32,7 @@ namespace ClientApp
                 return;
             }
 
-            serverIP = Prompt.ShowDialog("Dirección IP del Servidor:", "Conectar al Servidor");
+            serverIP = Prompt.ShowDialog("Dirección IP:", "Conectar al Servidor");
             if (string.IsNullOrEmpty(serverIP))
             {
                 MessageBox.Show("La dirección IP no puede estar vacía.");
@@ -51,7 +50,7 @@ namespace ClientApp
 
             try
             {
-                client = new TcpClient(serverIP, 13002);
+                client = new TcpClient(serverIP, 5000);
                 stream = client.GetStream();
                 UpdateStatus("Conectado al servidor...");
 
