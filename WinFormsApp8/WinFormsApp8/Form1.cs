@@ -1,9 +1,13 @@
 using System;
 using System.Media;
 using System.Net.Sockets;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Globalization; // Importar el espacio de nombres
+
+//CAMBIOS C
 
 namespace ClientApp
 {
@@ -12,6 +16,7 @@ namespace ClientApp
         private TcpClient client;
         private NetworkStream stream;
         private string clientName;
+        private string serverIP; // Campo para la dirección IP
 
         public Form1()
         {
@@ -28,9 +33,25 @@ namespace ClientApp
                 return;
             }
 
+            serverIP = Prompt.ShowDialog("Dirección IP del Servidor:", "Conectar al Servidor");
+            if (string.IsNullOrEmpty(serverIP))
+            {
+                MessageBox.Show("La dirección IP no puede estar vacía.");
+                this.Close();
+                return;
+            }
+
+            // Validar el formato de la dirección IP
+            if (!IPAddress.TryParse(serverIP, out _))
+            {
+                MessageBox.Show("Dirección IP no válida.");
+                this.Close();
+                return;
+            }
+
             try
             {
-                client = new TcpClient("172.20.11.27", 13002);
+                client = new TcpClient(serverIP, 13002);
                 stream = client.GetStream();
                 UpdateStatus("Conectado al servidor...");
 
@@ -41,6 +62,11 @@ namespace ClientApp
                 Thread receiveThread = new Thread(ReceiveMessages);
                 receiveThread.IsBackground = true; // Ensure the thread closes when the application closes
                 receiveThread.Start();
+            }
+            catch (SocketException)
+            {
+                MessageBox.Show("No se pudo conectar al servidor. Verifique la dirección IP e intente de nuevo.");
+                this.Close();
             }
             catch (Exception ex)
             {
@@ -67,8 +93,10 @@ namespace ClientApp
             string message = textBox1.Text;
             if (!string.IsNullOrEmpty(message))
             {
-                UpdateStatus("Yo: " + message); // Show the sent message in the UI
-                byte[] data = Encoding.ASCII.GetBytes(message);
+                string timeStamp = DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture);
+                string messageWithTime = $"{message} ({timeStamp})";
+                UpdateStatus("Yo: " + messageWithTime); // Show the sent message in the UI
+                byte[] data = Encoding.ASCII.GetBytes(messageWithTime);
                 stream.Write(data, 0, data.Length);
                 textBox1.Clear(); // Clear the text box after sending
             }
@@ -142,6 +170,11 @@ namespace ClientApp
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             client.Close();
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
