@@ -24,7 +24,7 @@ namespace ServerApp
         {
             // Crear y agregar controles al formulario
             TextBox portTextBox = new TextBox() { Top = 10, Left = 10, Width = 100 };
-            Button startButton = new Button() { Text = "Start Server", Top = 40, Left = 10 };
+            Button startButton = new Button() { Text = "Iniciar Servidor", Top = 40, Left = 10 };
 
             startButton.Click += (s, args) =>
             {
@@ -37,7 +37,7 @@ namespace ServerApp
                 }
                 else
                 {
-                    MessageBox.Show("Please enter a valid port number.");
+                    MessageBox.Show("No seas burro, ingresa bien el puerto.");
                 }
             };
 

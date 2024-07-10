@@ -30,7 +30,7 @@
             listBox1.ItemHeight = 15;
             listBox1.Location = new Point(10, 80);
             listBox1.Name = "listBox1";
-            listBox1.Size = new Size(680, 324);
+            listBox1.Size = new Size(680, 319);
             listBox1.TabIndex = 0;
             // 
             // portTextBox
@@ -46,21 +46,21 @@
             startButton.Name = "startButton";
             startButton.Size = new Size(100, 23);
             startButton.TabIndex = 2;
-            startButton.Text = "Start Server";
+            startButton.Text = "Iniciar Servidor";
             startButton.UseVisualStyleBackColor = true;
-            startButton.Click += new EventHandler(this.startButton_Click);
+            startButton.Click += startButton_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(700, 422);
-            Controls.Add(this.startButton);
-            Controls.Add(this.portTextBox);
-            Controls.Add(this.listBox1);
+            Controls.Add(startButton);
+            Controls.Add(portTextBox);
+            Controls.Add(listBox1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
-            Text = "Servidor De Microsoft Profesional Plus Ultra Max 14 Pro";
+            Text = "Servidor De Microsoft Profesional Plus Ultra Max 14 Pro Amoled 4K Super Sayayin Fase 4";
             FormClosing += Form1_FormClosing;
             ResumeLayout(false);
             PerformLayout();
@@ -77,7 +77,7 @@
             }
             else
             {
-                MessageBox.Show("Please enter a valid port number.");
+                MessageBox.Show("No seas burraaaaa, pon bien el puershto.");
             }
         }
     }
