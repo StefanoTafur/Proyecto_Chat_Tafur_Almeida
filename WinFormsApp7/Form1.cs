@@ -22,25 +22,51 @@ namespace ServerApp
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Thread serverThread = new Thread(StartServer);
-            serverThread.Start();
+            // Crear y agregar controles al formulario
+            TextBox portTextBox = new TextBox() { Top = 10, Left = 10, Width = 100 };
+            Button startButton = new Button() { Text = "Start Server", Top = 40, Left = 10 };
+
+            startButton.Click += (s, args) =>
+            {
+                if (int.TryParse(portTextBox.Text, out int port))
+                {
+                    Thread serverThread = new Thread(() => StartServer(port));
+                    serverThread.Start();
+                    startButton.Enabled = false;
+                    portTextBox.Enabled = false;
+                }
+                else
+                {
+                    MessageBox.Show("Please enter a valid port number.");
+                }
+            };
+
+            this.Controls.Add(portTextBox);
+            this.Controls.Add(startButton);
         }
 
-        private void StartServer()
+        private void StartServer(int port)
         {
-            listener = new TcpListener(IPAddress.Any, 13002);
+            listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
-            UpdateStatus("Servidor iniciado en el puerto 13002...");
+            UpdateStatus($"Servidor iniciado en el puerto {port}...");
 
             while (isRunning)
             {
-                var client = listener.AcceptTcpClient();
-                lock (clients)
+                try
                 {
-                    clients.Add(client);
+                    var client = listener.AcceptTcpClient();
+                    lock (clients)
+                    {
+                        clients.Add(client);
+                    }
+                    Thread clientThread = new Thread(HandleClient);
+                    clientThread.Start(client);
                 }
-                Thread clientThread = new Thread(HandleClient);
-                clientThread.Start(client);
+                catch (SocketException se)
+                {
+                    UpdateStatus("Error: " + se.Message);
+                }
             }
         }
 
@@ -53,7 +79,6 @@ namespace ServerApp
 
             try
             {
-                // Read the client's name
                 bytesRead = stream.Read(buffer, 0, buffer.Length);
                 string clientName = Encoding.ASCII.GetString(buffer, 0, bytesRead);
                 lock (clientNames)
@@ -67,7 +92,6 @@ namespace ServerApp
                 {
                     string message = Encoding.ASCII.GetString(buffer, 0, bytesRead);
 
-                    // Check if the message is a buzz command
                     if (message == "BUZZ")
                     {
                         UpdateStatus(clientName + " envió un zumbido.");

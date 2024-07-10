@@ -1,44 +1,84 @@
 ﻿namespace ServerApp
 {
     partial class Form1
-{
-    private System.ComponentModel.IContainer components = null;
-    private System.Windows.Forms.ListBox listBox1;
+    {
+        private System.ComponentModel.IContainer components = null;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.TextBox portTextBox;
+        private System.Windows.Forms.Button startButton;
 
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing && (components != null))
+        protected override void Dispose(bool disposing)
         {
-            components.Dispose();
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
         }
-        base.Dispose(disposing);
+
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            listBox1 = new ListBox();
+            portTextBox = new TextBox();
+            startButton = new Button();
+            SuspendLayout();
+            // 
+            // listBox1
+            // 
+            listBox1.FormattingEnabled = true;
+            listBox1.ItemHeight = 15;
+            listBox1.Location = new Point(10, 80);
+            listBox1.Name = "listBox1";
+            listBox1.Size = new Size(680, 324);
+            listBox1.TabIndex = 0;
+            // 
+            // portTextBox
+            // 
+            portTextBox.Location = new Point(10, 10);
+            portTextBox.Name = "portTextBox";
+            portTextBox.Size = new Size(100, 23);
+            portTextBox.TabIndex = 1;
+            // 
+            // startButton
+            // 
+            startButton.Location = new Point(120, 10);
+            startButton.Name = "startButton";
+            startButton.Size = new Size(100, 23);
+            startButton.TabIndex = 2;
+            startButton.Text = "Start Server";
+            startButton.UseVisualStyleBackColor = true;
+            startButton.Click += new EventHandler(this.startButton_Click);
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(700, 422);
+            Controls.Add(this.startButton);
+            Controls.Add(this.portTextBox);
+            Controls.Add(this.listBox1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "Form1";
+            Text = "Servidor De Microsoft Profesional Plus Ultra Max 14 Pro";
+            FormClosing += Form1_FormClosing;
+            ResumeLayout(false);
+            PerformLayout();
+        }
+
+        private void startButton_Click(object sender, EventArgs e)
+        {
+            if (int.TryParse(portTextBox.Text, out int port))
+            {
+                Thread serverThread = new Thread(() => StartServer(port));
+                serverThread.Start();
+                startButton.Enabled = false;
+                portTextBox.Enabled = false;
+            }
+            else
+            {
+                MessageBox.Show("Please enter a valid port number.");
+            }
+        }
     }
-        //
-    private void InitializeComponent()
-    {
-        this.listBox1 = new System.Windows.Forms.ListBox();
-        this.SuspendLayout();
-        // 
-        // listBox1
-        // 
-        this.listBox1.FormattingEnabled = true;
-        this.listBox1.ItemHeight = 16;
-        this.listBox1.Location = new System.Drawing.Point(12, 12);
-        this.listBox1.Name = "listBox1";
-        this.listBox1.Size = new System.Drawing.Size(776, 420);
-        this.listBox1.TabIndex = 0;
-        // 
-        // Form1
-        // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(800, 450);
-        this.Controls.Add(this.listBox1);
-        this.Name = "Form1";
-        this.Text = "Servidor";
-        this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
-        this.Load += new System.EventHandler(this.Form1_Load);
-        this.ResumeLayout(false);
-    }
-}
 }

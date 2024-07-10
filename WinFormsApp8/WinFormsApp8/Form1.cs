@@ -7,7 +7,6 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Globalization; // Importar el espacio de nombres
 
-
 namespace ClientApp
 {
     public partial class Form1 : Form
@@ -15,7 +14,8 @@ namespace ClientApp
         private TcpClient client;
         private NetworkStream stream;
         private string clientName;
-        private string serverIP; // Campo para la dirección IP
+        private string serverIP;
+        private int serverPort;
 
         public Form1()
         {
@@ -48,9 +48,17 @@ namespace ClientApp
                 return;
             }
 
+            string portInput = Prompt.ShowDialog("Puerto:", "Puerto del Servidor");
+            if (string.IsNullOrEmpty(portInput) || !int.TryParse(portInput, out serverPort))
+            {
+                MessageBox.Show("El puerto no puede estar vacío y debe ser un número válido.");
+                this.Close();
+                return;
+            }
+
             try
             {
-                client = new TcpClient(serverIP, 5000);
+                client = new TcpClient(serverIP, serverPort);
                 stream = client.GetStream();
                 UpdateStatus("Conectado al servidor...");
 
