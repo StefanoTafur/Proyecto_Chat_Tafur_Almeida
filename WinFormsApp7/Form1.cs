@@ -80,7 +80,7 @@ namespace ServerApp
             try
             {
                 bytesRead = stream.Read(buffer, 0, buffer.Length);
-                string clientName = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                string clientName = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                 lock (clientNames)
                 {
                     clientNames[client] = clientName;
@@ -90,7 +90,7 @@ namespace ServerApp
 
                 while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) != 0)
                 {
-                    string message = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
                     if (message == "BUZZ")
                     {
@@ -128,7 +128,7 @@ namespace ServerApp
 
         private void BroadcastMessage(TcpClient sender, string message)
         {
-            byte[] data = Encoding.ASCII.GetBytes(message);
+            byte[] data = Encoding.UTF8.GetBytes(message);
             lock (clients)
             {
                 foreach (var client in clients)

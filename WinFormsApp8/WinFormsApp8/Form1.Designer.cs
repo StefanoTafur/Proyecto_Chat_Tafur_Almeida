@@ -7,6 +7,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ComboBox emojiComboBox;
 
         protected override void Dispose(bool disposing)
         {
@@ -24,6 +25,7 @@
             button1 = new Button();
             button2 = new Button();
             listBox1 = new ListBox();
+            emojiComboBox = new ComboBox();
             SuspendLayout();
             // 
             // textBox1
@@ -31,16 +33,16 @@
             textBox1.ForeColor = SystemColors.InfoText;
             textBox1.Location = new Point(8, 387);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(680, 23);
+            textBox1.Size = new Size(580, 23);
             textBox1.TabIndex = 0;
             textBox1.KeyPress += textBox1_KeyPress;
             // 
             // button1
             // 
             button1.ForeColor = Color.Blue;
-            button1.Location = new Point(622, 359);
+            button1.Location = new Point(622, 387);
             button1.Name = "button1";
-            button1.Size = new Size(66, 22);
+            button1.Size = new Size(66, 23);
             button1.TabIndex = 1;
             button1.Text = "Enviar";
             button1.UseVisualStyleBackColor = true;
@@ -68,12 +70,23 @@
             listBox1.Size = new Size(676, 349);
             listBox1.TabIndex = 2;
             // 
+            // emojiComboBox
+            // 
+            emojiComboBox.FormattingEnabled = true;
+            emojiComboBox.Location = new Point(594, 387);
+            emojiComboBox.Name = "emojiComboBox";
+            emojiComboBox.Size = new Size(22, 23);
+            emojiComboBox.TabIndex = 4;
+            emojiComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            emojiComboBox.SelectedIndexChanged += emojiComboBox_SelectedIndexChanged;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(192, 192, 255);
             ClientSize = new Size(700, 422);
+            Controls.Add(emojiComboBox);
             Controls.Add(button2);
             Controls.Add(listBox1);
             Controls.Add(button1);

@@ -1,11 +1,11 @@
-using System;
+锘縰sing System;
 using System.Media;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using System.Globalization; // Importar el espacio de nombres
+using System.Globalization;
 
 namespace ClientApp
 {
@@ -20,6 +20,7 @@ namespace ClientApp
         public Form1()
         {
             InitializeComponent();
+            InitializeEmojis();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -27,23 +28,22 @@ namespace ClientApp
             clientName = Prompt.ShowDialog("Nombre:", "Nombre de Usuario");
             if (string.IsNullOrEmpty(clientName))
             {
-                MessageBox.Show("El nombre no puede estar vac韔.");
+                MessageBox.Show("El nombre no puede estar vac铆o.");
                 this.Close();
                 return;
             }
 
-            serverIP = Prompt.ShowDialog("Direcci髇 IP:", "Conectar al Servidor");
+            serverIP = Prompt.ShowDialog("Direcci贸n IP:", "Conectar al Servidor");
             if (string.IsNullOrEmpty(serverIP))
             {
-                MessageBox.Show("La direcci髇 IP no puede estar vac韆.");
+                MessageBox.Show("La direcci贸n IP no puede estar vac铆a.");
                 this.Close();
                 return;
             }
 
-            // Validar el formato de la direcci髇 IP
             if (!IPAddress.TryParse(serverIP, out _))
             {
-                MessageBox.Show("Direcci髇 IP no v醠ida.");
+                MessageBox.Show("Direcci贸n IP no v谩lida.");
                 this.Close();
                 return;
             }
@@ -51,7 +51,7 @@ namespace ClientApp
             string portInput = Prompt.ShowDialog("Puerto:", "Puerto del Servidor");
             if (string.IsNullOrEmpty(portInput) || !int.TryParse(portInput, out serverPort))
             {
-                MessageBox.Show("El puerto no puede estar vac韔 y debe ser un n鷐ero v醠ido.");
+                MessageBox.Show("El puerto no puede estar vac铆o y debe ser un n煤mero v谩lido.");
                 this.Close();
                 return;
             }
@@ -62,17 +62,16 @@ namespace ClientApp
                 stream = client.GetStream();
                 UpdateStatus("Conectado al servidor...");
 
-                // Send the client's name to the server
-                byte[] nameData = Encoding.ASCII.GetBytes(clientName);
+                byte[] nameData = Encoding.UTF8.GetBytes(clientName);
                 stream.Write(nameData, 0, nameData.Length);
 
                 Thread receiveThread = new Thread(ReceiveMessages);
-                receiveThread.IsBackground = true; // Ensure the thread closes when the application closes
+                receiveThread.IsBackground = true;
                 receiveThread.Start();
             }
             catch (SocketException)
             {
-                MessageBox.Show("No se pudo conectar al servidor. Verifique la direcci髇 IP e intente de nuevo.");
+                MessageBox.Show("No se pudo conectar al servidor. Verifique la direcci贸n IP e intente de nuevo.");
                 this.Close();
             }
             catch (Exception ex)
@@ -91,7 +90,7 @@ namespace ClientApp
             if (e.KeyChar == (char)Keys.Enter)
             {
                 SendMessage();
-                e.Handled = true; // Prevent the beep sound on Enter
+                e.Handled = true;
             }
         }
 
@@ -102,10 +101,10 @@ namespace ClientApp
             {
                 string timeStamp = DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture);
                 string messageWithTime = $"{message} ({timeStamp})";
-                UpdateStatus("Yo: " + messageWithTime); // Show the sent message in the UI
-                byte[] data = Encoding.ASCII.GetBytes(messageWithTime);
+                UpdateStatus("Yo: " + messageWithTime);
+                byte[] data = Encoding.UTF8.GetBytes(messageWithTime);
                 stream.Write(data, 0, data.Length);
-                textBox1.Clear(); // Clear the text box after sending
+                textBox1.Clear();
             }
         }
 
@@ -117,7 +116,7 @@ namespace ClientApp
         private void SendBuzz()
         {
             string buzzMessage = "BUZZ";
-            byte[] data = Encoding.ASCII.GetBytes(buzzMessage);
+            byte[] data = Encoding.UTF8.GetBytes(buzzMessage);
             stream.Write(data, 0, data.Length);
         }
 
@@ -130,7 +129,7 @@ namespace ClientApp
             {
                 while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) != 0)
                 {
-                    string message = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     if (message == "BUZZ")
                     {
                         ShowBuzz();
@@ -150,7 +149,6 @@ namespace ClientApp
         private void ShowBuzz()
         {
             SystemSounds.Beep.Play();
-            // Additional code to vibrate the window
             var originalLocation = this.Location;
             var rnd = new Random();
             const int shakeAmplitude = 20;
@@ -182,6 +180,21 @@ namespace ClientApp
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void emojiComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            textBox1.Text += emojiComboBox.SelectedItem.ToString();
+            textBox1.Focus();
+            textBox1.SelectionStart = textBox1.Text.Length;
+        }
+
+        private void InitializeEmojis()
+        {
+            emojiComboBox.Items.AddRange(new string[]
+            {
+                "馃榾", "馃槀", "馃槏", "馃槑", "馃槩", "馃槨", "馃憤", "馃憥", "馃憦", "馃檶"
+            });
         }
     }
 
