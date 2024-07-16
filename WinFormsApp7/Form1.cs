@@ -22,7 +22,7 @@ namespace ServerApp
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Crear y agregar controles al formulario
+            // Crear y agregar controles al formularioo
             TextBox portTextBox = new TextBox() { Top = 10, Left = 10, Width = 100 };
             Button startButton = new Button() { Text = "Iniciar Servidor", Top = 40, Left = 10 };
 
