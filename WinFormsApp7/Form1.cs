@@ -28,21 +28,40 @@ namespace ServerApp
 
             startButton.Click += (s, args) =>
             {
-                if (int.TryParse(portTextBox.Text, out int port))
+                StartServerFromInput(portTextBox, startButton);
+            };
+
+            portTextBox.KeyPress += (s, args) =>
+            {
+                if (args.KeyChar == (char)Keys.Enter)
                 {
-                    Thread serverThread = new Thread(() => StartServer(port));
-                    serverThread.Start();
-                    startButton.Enabled = false;
-                    portTextBox.Enabled = false;
-                }
-                else
-                {
-                    MessageBox.Show("No seas burro, ingresa bien el puerto.");
+                    StartServerFromInput(portTextBox, startButton);
+                    args.Handled = true;
                 }
             };
 
             this.Controls.Add(portTextBox);
             this.Controls.Add(startButton);
+
+            // Configurar anclajes para hacer el formulario responsivo
+            this.listBox1.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
+            portTextBox.Anchor = (AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
+            startButton.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
+        }
+
+        private void StartServerFromInput(TextBox portTextBox, Button startButton)
+        {
+            if (int.TryParse(portTextBox.Text, out int port))
+            {
+                Thread serverThread = new Thread(() => StartServer(port));
+                serverThread.Start();
+                startButton.Enabled = false;
+                portTextBox.Enabled = false;
+            }
+            else
+            {
+                MessageBox.Show("No seas burro, ingresa bien el puerto.");
+            }
         }
 
         private void StartServer(int port)
@@ -99,8 +118,19 @@ namespace ServerApp
                     }
                     else
                     {
-                        UpdateStatus(clientName + ": " + message);
-                        BroadcastMessage(client, clientName + ": " + message);
+                        var parts = message.Split('|');
+                        if (parts.Length == 2)
+                        {
+                            string timeStamp = parts[0];
+                            string clientMessage = parts[1];
+                            string formattedMessage = $"({timeStamp}) {clientName}: {clientMessage}";
+                            UpdateStatus(formattedMessage);
+                            BroadcastMessage(client, formattedMessage);
+                        }
+                        else
+                        {
+                            UpdateStatus("Formato de mensaje incorrecto.");
+                        }
                     }
                 }
             }

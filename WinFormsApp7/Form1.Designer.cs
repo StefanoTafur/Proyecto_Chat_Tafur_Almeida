@@ -60,7 +60,7 @@
             Controls.Add(listBox1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
-            Text = "Servidor De Microsoft Profesional Plus Ultra Max 14 Pro Amoled 4K Super Sayayin Fase 4";
+            Text = "Servidor De Microsoft Profesional Plus Ultra Max 14 Pro Amoled 4K Super Sayayin Fase 4 Aguanta Warzones";
             FormClosing += Form1_FormClosing;
             ResumeLayout(false);
             PerformLayout();
