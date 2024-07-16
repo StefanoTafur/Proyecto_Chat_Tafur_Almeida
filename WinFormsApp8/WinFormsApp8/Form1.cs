@@ -16,8 +16,6 @@ namespace ClientApp
         private string clientName;
         private string serverIP;
         private int serverPort;
-        private Thread receiveThread;
-        private bool isConnected = false;
 
         public Form1()
         {
@@ -58,28 +56,23 @@ namespace ClientApp
                 return;
             }
 
-            ConnectToServer();
-        }
-
-        private void ConnectToServer()
-        {
             try
             {
                 client = new TcpClient(serverIP, serverPort);
                 stream = client.GetStream();
                 UpdateStatus("Conectado al servidor...");
-                isConnected = true;
 
                 byte[] nameData = Encoding.UTF8.GetBytes(clientName);
                 stream.Write(nameData, 0, nameData.Length);
 
-                receiveThread = new Thread(ReceiveMessages);
+                Thread receiveThread = new Thread(ReceiveMessages);
                 receiveThread.IsBackground = true;
                 receiveThread.Start();
             }
             catch (SocketException)
             {
                 MessageBox.Show("No se pudo conectar al servidor. Verifique la dirección IP e intente de nuevo.");
+                this.Close();
             }
             catch (Exception ex)
             {
@@ -87,49 +80,9 @@ namespace ClientApp
             }
         }
 
-
-        private void DisconnectFromServer()
-        {
-            try
-            {
-                if (client != null && client.Connected)
-                {
-                    stream.Close();
-                    client.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                UpdateStatus("Error al desconectar del servidor: " + ex.Message);
-            }
-            finally
-            {
-                isConnected = false;
-                UpdateStatus("Desconectado del servidor.");
-            }
-        }
-
-
         private void button1_Click(object sender, EventArgs e)
         {
             SendMessage();
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            if (isConnected)
-            {
-                DisconnectFromServer();
-            }
-        }
-
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            if (!isConnected)
-            {
-                ConnectToServer();
-            }
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
@@ -143,25 +96,17 @@ namespace ClientApp
 
         private void SendMessage()
         {
-            if (isConnected)
+            string message = textBox1.Text;
+            if (!string.IsNullOrEmpty(message))
             {
-                string message = textBox1.Text;
-                if (!string.IsNullOrEmpty(message))
-                {
-                    string timeStamp = DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture);
-                    string messageWithTime = $"{timeStamp}|{message}";
-                    UpdateStatus($"({timeStamp}) Yo: {message}");
-                    byte[] data = Encoding.UTF8.GetBytes(messageWithTime);
-                    stream.Write(data, 0, data.Length);
-                    textBox1.Clear();
-                }
-            }
-            else
-            {
-                UpdateStatus("No se puede enviar el mensaje, no está conectado.");
+                string timeStamp = DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture);
+                string messageWithTime = $"{message} ({timeStamp})";
+                UpdateStatus("Yo: " + messageWithTime);
+                byte[] data = Encoding.UTF8.GetBytes(messageWithTime);
+                stream.Write(data, 0, data.Length);
+                textBox1.Clear();
             }
         }
-
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -170,12 +115,9 @@ namespace ClientApp
 
         private void SendBuzz()
         {
-            if (isConnected)
-            {
-                string buzzMessage = "BUZZ";
-                byte[] data = Encoding.UTF8.GetBytes(buzzMessage);
-                stream.Write(data, 0, data.Length);
-            }
+            string buzzMessage = "BUZZ";
+            byte[] data = Encoding.UTF8.GetBytes(buzzMessage);
+            stream.Write(data, 0, data.Length);
         }
 
         private void ReceiveMessages()
@@ -185,7 +127,7 @@ namespace ClientApp
 
             try
             {
-                while (isConnected && (bytesRead = stream.Read(buffer, 0, buffer.Length)) != 0)
+                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     if (message == "BUZZ")
@@ -200,20 +142,9 @@ namespace ClientApp
             }
             catch (Exception e)
             {
-                if (isConnected)
-                {
-                    UpdateStatus("Error: " + e.Message);
-                }
-            }
-            finally
-            {
-                if (isConnected)
-                {
-                    DisconnectFromServer();
-                }
+                UpdateStatus("Error: " + e.Message);
             }
         }
-
 
         private void ShowBuzz()
         {
@@ -243,7 +174,7 @@ namespace ClientApp
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DisconnectFromServer();
+            client.Close();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
